@@ -22,10 +22,12 @@ readline.question('What is the path to the poker hand file you wish to sort? ', 
     readline.close()
 })
 
-
+var roundContinue = true
 
 // Function to determine the winner of each round
 function roundWinner(roundData) {
+    let winner;
+
     
     // creating two empty arrays for each player's cards
     playerOneCards = []
@@ -123,108 +125,203 @@ function roundWinner(roundData) {
     }
     playerTwoCardSuites.sort()
 
+    // declaring same suite variables 
+    let playerOneSameSuite;
+    let playerTwoSameSuite;
 
-    // declaring variable for the winner
-    let winner;
-
-
-    // ----------------------------------------------------------------
-    // Determining Royal Flush Winner
-
-    let playerOneRFSameSuite;
-    let playerOneRFNumbers;
-    let playerOneRF;
-
-    var ticker = 14;
-
-    for (let i = 0; i < playerOneCardNumbers.length; i++) {
-        if (playerOneCardNumbers[i] === ticker) {
-            playerOneRFNumbers = true
-            ticker -= 1
-        }
-        else {
-            playerOneRFNumbers = false
-            break
-        }
-    }
-
+    // looping through playerOneCardSuites to determine if all the cards are the same suite
     for (let i = 0; i < playerOneCardSuites.length; i++) {
         if (i < 4) {
             if (playerOneCardSuites[i] === playerOneCardSuites[i + 1]) {
-                playerOneRFSameSuite = true
+                playerOneSameSuite = true
             }
             else {
-                playerOneRFSameSuite = false
+                playerOneSameSuite = false
                 break
             }
         }
         else {
             if (playerOneCardSuites[i] === playerOneCardSuites[i - 1]) {
-                playerOneRFSameSuite = true
+                playerOneSameSuite = true
             }
             else {
-                playerOneRFSameSuite = false
+                playerOneSameSuite = false
                 break
             }
         }
     }
 
-    if (playerOneRFSameSuite && playerOneRFNumbers) {
-        playerOneRF = true
-    }
-    else {
-        playerOneRF = false
-    }
-
-
-    let playerTwoRFSameSuite;
-    let playerTwoRFNumbers;
-    let playerTwoRF;
-
-    var ticker = 14;
-
-    for (let i = 0; i < playerTwoCardNumbers.length; i++) {
-        if (playerTwoCardNumbers[i] === ticker) {
-            playerTwoRFNumbers = true
-            ticker -= 1
-        }
-        else {
-            playerTwoRFNumbers = false
-            break
-        }
-    }
-
+    // repeats above for player two
     for (let i = 0; i < playerTwoCardSuites.length; i++) {
         if (i < 4) {
             if (playerTwoCardSuites[i] === playerTwoCardSuites[i + 1]) {
-                playerTwoRFSameSuite = true
+                playerTwoSameSuite = true
             }
             else {
-                playerTwoRFSameSuite = false
+                playerTwoSameSuite = false
                 break
             }
         }
         else {
             if (playerTwoCardSuites[i] === playerTwoCardSuites[i - 1]) {
-                playerTwoRFSameSuite = true
+                playerTwoSameSuite = true
             }
             else {
-                playerTwoRFSameSuite = false
+                playerTwoSameSuite = false
                 break
             }
         }
     }
 
-    if (playerTwoRFSameSuite && playerTwoRFNumbers) {
-        playerTwoRF = true
-    }
-    else {
-        playerTwoRF = false
+
+
+
+    // creating a while loop to allow the code to break when a winner is decided
+    while (roundContinue){
+        // ----------------------------------------------------------------
+    // Determining Royal Flush Winner
+        // declaring variables for royal flush
+        let playerOneRFNumbers;
+        let playerOneRF;
+
+        // ticker to determine if the users highest card is an ace
+        var ticker = 14;
+
+        // loops through the users cards to determine if the user has an ace, king, queen, jack and 10 (cards are already in
+        // descending order)
+        for (let i = 0; i < playerOneCardNumbers.length; i++) {
+            if (playerOneCardNumbers[i] === ticker) {
+                playerOneRFNumbers = true
+                ticker -= 1
+            }
+            else {
+                playerOneRFNumbers = false
+                break
+            }
+        }
+        
+        // if the player has both the right cards all of the same suite, they are devlared the winner and the round ends
+        if (playerOneSameSuite && playerOneRFNumbers) {
+            playerOneRF = true
+            winner = 'playerOne'
+            roundContinue = false
+        }
+        else {
+            playerOneRF = false
+        }
+
+
+        // above code repeats for player two
+        let playerTwoRFNumbers;
+        let playerTwoRF;
+
+        var ticker = 14;
+
+        for (let i = 0; i < playerTwoCardNumbers.length; i++) {
+            if (playerTwoCardNumbers[i] === ticker) {
+                playerTwoRFNumbers = true
+                ticker -= 1
+            }
+            else {
+                playerTwoRFNumbers = false
+                break
+            }
+        }
+
+        if (playerTwoSameSuite && playerTwoRFNumbers) {
+            playerTwoRF = true
+            winner = 'playerTwo'
+            roundContinue = false
+        }
+        else {
+            playerTwoRF = false
+        }
+
+        // -------------------------------------------------------
+        // Determining straight flush
+
+        let playerOneStraight;
+        let playerOneSF;
+
+        // determining if player one has a straight
+        for (let i = 0; i < playerOneCardNumbers.length; i++) {
+            if (i < 4) {
+                if (playerOneCardNumbers[i] === playerOneCardNumbers[i + 1] + 1) {
+                    playerOneStraight = true
+                }
+                else {
+                    playerOneStraight = false
+                    break
+                }
+            }
+        }
+
+        // determining if player one has a straight flush by seeing if they have both a straight and all cards of the same suit
+        if (playerOneStraight && playerOneSameSuite) {
+            playerOneSF = true
+        } else {
+            playerOneSF = false
+        }
+
+        // repeats above for player two
+        let playerTwoStraight;
+        let playerTwoSF;
+
+        for (let i = 0; i < playerTwoCardNumbers.length; i++) {
+            if (i < 4) {
+                if (playerTwoCardNumbers[i] === playerTwoCardNumbers[i + 1] + 1) {
+                    playerTwoStraight = true
+                }
+                else {
+                    playerTwoStraight = false
+                    break
+                }
+            }
+        }
+
+        if (playerTwoStraight && playerTwoSameSuite) {
+            playerTwoSF = true
+        } else {
+            playerTwoSF = false
+        }
+
+        // If one player has a SF and the other doesnt, the one with it wins 
+        if (playerOneSF && !playerTwoSF) {
+            winner = 'playerOne'
+            roundContinue = false
+        }
+
+        if (!playerOneSF && playerTwoSF) {
+            winner = 'playerTwo'
+            roundContinue = false
+        }
+
+        // if both players have a SF, the player with the highest SF wins
+        if (playerOneSF && playerTwoSF) {
+            if (playerOneCardNumbers > playerTwoCardNumbers) {
+                winner = 'playerOne'
+                roundContinue = false
+            }
+            else if (playerOneCardNumbers < playerTwoCardNumbers) {
+                winner = 'playerTwo'
+                roundContinue = false
+            }
+        }
+
+
+
+
+
+
+
+
+
     }
     
-    if (playerTwoRF === true) {
-        console.log('Player Two Royal Flush!')
-    }
+
+
+    
+    
     
 // // -----------------------------------------------------------------
 //     // Determining who wins if relying on high cards
