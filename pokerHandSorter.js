@@ -221,10 +221,6 @@ function roundWinner(roundData) {
       playerTwoRF = false;
     }
 
-    if (winner !== '') {
-      roundContinue = false;
-    }
-
     //-------------------------------------------------------
     // Determining straight flush
     let playerOneStraight;
@@ -282,20 +278,15 @@ function roundWinner(roundData) {
         winner = 'playerTwo';
         roundContinue = false;
       }
-
       // if both players have a SF, the player with the highest SF wins
       if (playerOneSF && playerTwoSF) {
-        if (playerOneCardNumbers > playerTwoCardNumbers) {
+        if (playerOneCardNumbers[0] > playerTwoCardNumbers[0]) {
           winner = 'playerOne';
           roundContinue = false;
-        } else if (playerOneCardNumbers < playerTwoCardNumbers) {
+        } else if (playerOneCardNumbers[0] < playerTwoCardNumbers[0]) {
           winner = 'playerTwo';
           roundContinue = false;
         }
-      }
-
-      if (winner !== '') {
-        roundContinue = false;
       }
     }
 
