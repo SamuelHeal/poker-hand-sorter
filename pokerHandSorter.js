@@ -20,12 +20,18 @@ readline.question(
     for (let i = 0; i < pokerRounds[0].length; i++) {
       roundWinner(pokerRounds[0][i]);
     }
+    console.log('-------Total Hands Won------');
+    console.log('Player 1:', playerOneWins);
+    console.log('Player 2:', playerTwoWins);
 
     readline.close();
   }
 );
 
 var roundContinue = true;
+var playerOneWins = 0;
+var playerTwoWins = 0;
+var splitPotTotal = 0;
 
 // Function to determine the winner of each round
 function roundWinner(roundData) {
@@ -475,8 +481,9 @@ function roundWinner(roundData) {
 
     // ----------------------------------------------------------
     // Determining three of a kind
+    const playerOneCards = {};
+    const playerTwoCards = {};
     if (roundContinue) {
-      const playerOneCards = {};
       let playerOneThreeOfAKind;
       var playerOneThreeOfKindCard = 0;
 
@@ -497,7 +504,7 @@ function roundWinner(roundData) {
       }
 
       // above code repeats for player two
-      const playerTwoCards = {};
+
       let playerTwoThreeOfAKind;
       var playerTwoThreeOfKindCard = 0;
 
@@ -539,14 +546,9 @@ function roundWinner(roundData) {
     // ------------------------------------------------------------------------
     // Determining two pairs
     if (roundContinue) {
-      const playerOneCards = {};
       let playerOneTwoPair;
       const playerOneTwoOfKindCards = [];
       var playerOneSingleCard = 0;
-
-      playerOneCardNumbers.forEach(function (duplicates) {
-        playerOneCards[duplicates] = (playerOneCards[duplicates] || 0) + 1;
-      });
 
       // this determines whether the player has any 2 sets of cards that appears 2 times
       if (playerOneSortedDuplicateCards.length === 3) {
@@ -562,16 +564,11 @@ function roundWinner(roundData) {
         }
       }
 
-      const playerTwoCards = {};
+      // repeats the above for player 2
       let playerTwoTwoPair;
       const playerTwoTwoOfKindCards = [];
       var playerTwoSingleCard = 0;
 
-      playerTwoCardNumbers.forEach(function (duplicates) {
-        playerTwoCards[duplicates] = (playerTwoCards[duplicates] || 0) + 1;
-      });
-
-      // this determines whether the player has any 2 sets of cards that appears 2 times
       if (playerTwoSortedDuplicateCards.length === 3) {
         for (let i = 0; i < playerTwoSortedDuplicateCards.length; i++) {
           if (playerTwoSortedDuplicateCards[i][1] === 2) {
@@ -585,6 +582,7 @@ function roundWinner(roundData) {
         }
       }
 
+      // Sorts the players 2 pairs from highest to lowest
       playerOneTwoOfKindCards.sort(function (a, b) {
         return b - a;
       });
@@ -592,6 +590,9 @@ function roundWinner(roundData) {
         return b - a;
       });
 
+      // Similar to previous functions, if one player has 2 pairs and the other doesnt, that player wins.
+      // If both players have 2 pairs, the player with the highest two pair wins
+      // If both players have the same 2 pair, the player with the highest 5th card wins
       if (playerOneTwoPair && !playerTwoTwoPair) {
         winner = 'playerOne';
         roundContinue = false;
@@ -623,12 +624,131 @@ function roundWinner(roundData) {
               roundContinue = false;
             } else if (playerOneSingleCard === playerTwoSingleCard) {
               winner = 'Split Pot';
+              roundContinue = false;
+            }
+          }
+        }
+      }
+
+      // --------------------------------------------------------------------
+      // Determining single pair
+      if (roundContinue) {
+        //   Declaring variables for player one having a single pair
+        let playerOnePair;
+        var playerOnePairCard = 0;
+        var playerOneHighCards = [];
+
+        // Determines whether a player has a single pair, pushing that pair card number to the playerOnePairCard variable.
+        // It will then push each single card into the above array and sort it in order of highest to lowest
+        if (playerOneSortedDuplicateCards.length === 4) {
+          for (let i = 0; i < playerOneSortedDuplicateCards.length; i++) {
+            if (playerOneSortedDuplicateCards[i][1] === 2) {
+              playerOnePair = true;
+              playerOnePairCard = parseInt(playerOneSortedDuplicateCards[i][0]);
+            }
+            if (playerOneSortedDuplicateCards[i][1] === 1) {
+              playerOneHighCards.push(
+                parseInt(playerOneSortedDuplicateCards[i][0])
+              );
+            }
+          }
+          playerOneHighCards.sort(function (a, b) {
+            return b - a;
+          });
+        }
+
+        // above is repeated for player two
+        let playerTwoPair;
+        var playerTwoPairCard = 0;
+        var playerTwoHighCards = [];
+
+        if (playerTwoSortedDuplicateCards.length === 4) {
+          for (let i = 0; i < playerTwoSortedDuplicateCards.length; i++) {
+            if (playerTwoSortedDuplicateCards[i][1] === 2) {
+              playerTwoPair = true;
+              playerTwoPairCard = parseInt(playerTwoSortedDuplicateCards[i][0]);
+            }
+            if (playerTwoSortedDuplicateCards[i][1] === 1) {
+              playerTwoHighCards.push(
+                parseInt(playerTwoSortedDuplicateCards[i][0])
+              );
+            }
+          }
+          playerTwoHighCards.sort(function (a, b) {
+            return b - a;
+          });
+        }
+
+        // Determining who wins with similar logic to previous functions.
+        // Main different is the final aspect where a for loop is used to sort through the player...HighCards array
+        // in the instance that both players pair is the same number. This will then loop through that array to determine
+        // who has the highest card to win
+        if (playerOnePair && !playerTwoPair) {
+          winner = 'playerOne';
+          roundContinue = false;
+        } else if (!playerOnePair && playerTwoPair) {
+          winner = 'playerTwo';
+          roundContinue = false;
+        } else if (playerOnePair && playerTwoPair) {
+          if (playerOnePairCard > playerTwoPairCard) {
+            winner = 'playerOne';
+            roundContinue = false;
+          } else if (playerOnePairCard < playerTwoPairCard) {
+            winner = 'playerTwo';
+            roundContinue = false;
+          } else if (playerOnePairCard === playerTwoPairCard) {
+            for (let i = 0; i < playerOneHighCards.length; i++) {
+              if (playerOneHighCards[i] > playerTwoHighCards[i]) {
+                winner = 'playerOne';
+                roundContinue = false;
+                break;
+              } else if (playerOneHighCards[i] < playerTwoHighCards[i]) {
+                winner = 'playerTwo';
+                roundContinue = false;
+                break;
+              }
+              if (i === 3) {
+                if (roundContinue) {
+                  if (playerOneHighCards[i] === playerTwoHighCards[i]) {
+                    winner = 'Split Pot';
+                    roundContinue = false;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // ----------------------------------------------------------------------------
+      // Determining winner based of high card
+      if (roundContinue) {
+        for (let i = 0; i < playerOneCardNumbers.length; i++) {
+          if (playerOneCardNumbers[i] > playerTwoCardNumbers[i]) {
+            winner = 'playerOne';
+            roundContinue = false;
+          } else if (playerOneCardNumbers[i] < playerTwoCardNumbers[i]) {
+            winner = 'playerTwo';
+            roundContinue = false;
+          }
+          if (i === 4) {
+            if (roundContinue) {
+              if (playerOneCardNumbers[i] === playerTwoCardNumbers[i]) {
+                winner = 'Split Pot';
+                roundContinue = false;
+              }
             }
           }
         }
       }
     }
     roundContinue = false;
-    console.log(winner);
+    if (winner === 'playerOne') {
+      playerOneWins++;
+    } else if (winner === 'playerTwo') {
+      playerTwoWins++;
+    } else if (winner === 'Split Pot') {
+      splitPotTotal++;
+    }
   }
 }
