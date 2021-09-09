@@ -244,8 +244,9 @@ function roundWinner(roundData) {
 
         //-------------------------------------------------------
         // Determining straight flush
+        let playerOneStraight;
+        let playerTwoStraight;
         if (roundContinue) {
-            let playerOneStraight;
             var playerOneSF = false
     
             // determining if player one has a straight
@@ -269,7 +270,7 @@ function roundWinner(roundData) {
             }
     
             // repeats above for player two
-            let playerTwoStraight;
+            
             var playerTwoSF = false
     
             for (let i = 0; i < playerTwoCardNumbers.length; i++) {
@@ -471,7 +472,10 @@ function roundWinner(roundData) {
         // ----------------------------------------------------------
         // Determining flush
         if (roundContinue) {
-            
+            // uses the already created variables, playerOneSameSuite and playerTwoSameSuite, to determine who wins on a flush
+            // uses pretty much the same functionality as above code to determine the winner.
+            // if one player has a flush while the other doesn't, the play with a flush wins.
+            // if both players have a flush, the player with the highest card wins
             if (playerOneSameSuite && !playerTwoSameSuite) {
                 winner = 'playerOne'
                 roundContinue = false
@@ -493,7 +497,29 @@ function roundWinner(roundData) {
                 }
             }
         }
-        
+
+        // ----------------------------------------------------------
+        // Determining straight
+        if (roundContinue) {
+            if (playerOneStraight && !playerTwoStraight) {
+                winner = 'playerOne'
+                roundContinue = false
+            }
+            else if (!playerOneStraight && playerTwoStraight) {
+                winner = 'playerTwo'
+                roundContinue = false
+            }
+            else if (playerOneStraight && playerTwoStraight) {
+                if (playerOneCardNumbers[0] > playerTwoCardNumbers[0]) {
+                    winner = 'playerOne'
+                    roundContinue = false
+                }
+                else if (playerOneCardNumbers[0] < playerTwoCardNumbers[0]) {
+                    winner = 'playerTwo'
+                    roundContinue = false
+                }
+            }
+        }
         
         
         
