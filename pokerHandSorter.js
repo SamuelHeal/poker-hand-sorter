@@ -308,8 +308,84 @@ function roundWinner(roundData) {
             }
         }
 
+        // ------------------------------------------------------------------
 
+        // Determining four of a kind
+        const playerOneFourCards = {}
+        let playerOneFourOfAKind; 
+        var playerOneFourOfKindCard = 0
 
+        // goes through player ones cards and sorts it into what card numbers they have, and how many they have, into an object
+        // object will look like this {'1': 4, '5', 1} as an example, with the string being the card number, and the int
+        // being the number of times that card is in the hand
+        playerOneCardNumbers.forEach(function(duplicates) {
+            playerOneFourCards[duplicates] = (playerOneFourCards[duplicates] || 0) + 1
+        })
+
+        // this sorts the above object into an array, with each item being in its on array within the array
+        const playerOneSortedDuplicateCards = Object.entries(playerOneFourCards)
+
+        // this determines whether the player has any card that appears four times
+        if (playerOneSortedDuplicateCards.length === 2) {
+            playerOneFourOfAKind = true
+            for (let i = 0; i < playerOneSortedDuplicateCards.length; i++) {
+                if (playerOneSortedDuplicateCards[i][1] === 4) {
+                    playerOneFourOfKindCard = parseInt(playerOneSortedDuplicateCards[i][0])
+                }
+            }
+        }
+
+        // above code repeats for player two
+        const playerTwoFourCards = {}
+        let playerTwoFourOfAKind; 
+        var playerTwoFourOfKindCard = 0
+
+        playerTwoCardNumbers.forEach(function(duplicates) {
+            playerTwoFourCards[duplicates] = (playerTwoFourCards[duplicates] || 0) + 1
+        })
+
+        const playerTwoSortedDuplicateCards = Object.entries(playerTwoFourCards)
+
+        if (playerTwoSortedDuplicateCards.length === 2) {
+            playerTwoFourOfAKind = true
+            for (let i = 0; i < playerTwoSortedDuplicateCards.length; i++) {
+                if (playerTwoSortedDuplicateCards[i][1] === 4) {
+                    playerTwoFourOfKindCard = parseInt(playerTwoSortedDuplicateCards[i][0])
+                }
+            }
+        }
+
+        // determines who wins based on who has a four of a kind
+        // if both players have one, the highest four of a kind wins
+        // if no four of a kind, the round will continue
+        if (playerOneFourOfAKind && !playerTwoFourOfAKind) {
+            winner = 'playerOne'
+            roundContinue = false
+
+        }
+
+        else if (!playerOneFourOfAKind && playerTwoFourOfAKind) {
+            winner = 'playerTwo'
+            roundContinue = false
+
+        }
+
+        else if (playerOneFourOfAKind && playerTwoFourOfAKind) {
+            if (playerOneFourOfKindCard > playerTwoFourOfKindCard) {
+                winner = 'playerOne'
+                roundContinue = false
+
+            }
+            else if (playerOneFourOfKindCard < playerTwoFourOfKindCard) {
+                winner = 'playerTwo'
+                roundContinue = false
+
+            }
+        }
+
+        // -----------------------------------------------------------
+        
+        
 
 
 
