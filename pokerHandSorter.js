@@ -19,15 +19,17 @@ readline.question('What is the path to the poker hand file you wish to sort? ', 
     for (let i = 0; i < pokerRounds[0].length; i++) {
         roundWinner(pokerRounds[0][i])
     }
+
     readline.close()
 })
 
 var roundContinue = true
 
+
 // Function to determine the winner of each round
 function roundWinner(roundData) {
-    let winner;
-
+    var winner = ''
+    roundContinue = true
     
     // creating two empty arrays for each player's cards
     playerOneCards = []
@@ -174,8 +176,6 @@ function roundWinner(roundData) {
     }
 
 
-
-
     // creating a while loop to allow the code to break when a winner is decided
     while (roundContinue){
         // ----------------------------------------------------------------
@@ -237,285 +237,246 @@ function roundWinner(roundData) {
             playerTwoRF = false
         }
 
-        // -------------------------------------------------------
+        if (winner !== '') {
+            roundContinue = false
+        }
+
+
+        //-------------------------------------------------------
         // Determining straight flush
-
-        let playerOneStraight;
-        let playerOneSF;
-
-        // determining if player one has a straight
-        for (let i = 0; i < playerOneCardNumbers.length; i++) {
-            if (i < 4) {
-                if (playerOneCardNumbers[i] === playerOneCardNumbers[i + 1] + 1) {
-                    playerOneStraight = true
-                }
-                else {
-                    playerOneStraight = false
-                    break
-                }
-            }
-        }
-
-        // determining if player one has a straight flush by seeing if they have both a straight and all cards of the same suit
-        if (playerOneStraight && playerOneSameSuite) {
-            playerOneSF = true
-        } else {
-            playerOneSF = false
-        }
-
-        // repeats above for player two
-        let playerTwoStraight;
-        let playerTwoSF;
-
-        for (let i = 0; i < playerTwoCardNumbers.length; i++) {
-            if (i < 4) {
-                if (playerTwoCardNumbers[i] === playerTwoCardNumbers[i + 1] + 1) {
-                    playerTwoStraight = true
-                }
-                else {
-                    playerTwoStraight = false
-                    break
+        if (roundContinue) {
+            let playerOneStraight;
+            var playerOneSF = false
+    
+            // determining if player one has a straight
+            for (let i = 0; i < playerOneCardNumbers.length; i++) {
+                if (i < 4) {
+                    if (playerOneCardNumbers[i] === playerOneCardNumbers[i + 1] + 1) {
+                        playerOneStraight = true
+                    }
+                    else {
+                        playerOneStraight = false
+                        break
+                    }
                 }
             }
-        }
-
-        if (playerTwoStraight && playerTwoSameSuite) {
-            playerTwoSF = true
-        } else {
-            playerTwoSF = false
-        }
-
-        // If one player has a SF and the other doesnt, the one with it wins 
-        if (playerOneSF && !playerTwoSF) {
-            winner = 'playerOne'
-            roundContinue = false
-        }
-
-        if (!playerOneSF && playerTwoSF) {
-            winner = 'playerTwo'
-            roundContinue = false
-        }
-
-        // if both players have a SF, the player with the highest SF wins
-        if (playerOneSF && playerTwoSF) {
-            if (playerOneCardNumbers > playerTwoCardNumbers) {
+    
+            // determining if player one has a straight flush by seeing if they have both a straight and all cards of the same suit
+            if (playerOneStraight && playerOneSameSuite) {
+                playerOneSF = true
+            } else {
+                playerOneSF = false
+            }
+    
+            // repeats above for player two
+            let playerTwoStraight;
+            var playerTwoSF = false
+    
+            for (let i = 0; i < playerTwoCardNumbers.length; i++) {
+                if (i < 4) {
+                    if (playerTwoCardNumbers[i] === playerTwoCardNumbers[i + 1] + 1) {
+                        playerTwoStraight = true
+                    }
+                    else {
+                        playerTwoStraight = false
+                        break
+                    }
+                }
+            }
+    
+            if (playerTwoStraight && playerTwoSameSuite) {
+                playerTwoSF = true
+    
+            } else {
+                playerTwoSF = false
+            }
+    
+            // If one player has a SF and the other doesnt, the one with it wins 
+            if (playerOneSF && !playerTwoSF) {
                 winner = 'playerOne'
                 roundContinue = false
             }
-            else if (playerOneCardNumbers < playerTwoCardNumbers) {
+    
+            if (!playerOneSF && playerTwoSF) {
                 winner = 'playerTwo'
                 roundContinue = false
             }
+    
+            // if both players have a SF, the player with the highest SF wins
+            if (playerOneSF && playerTwoSF) {
+                if (playerOneCardNumbers > playerTwoCardNumbers) {
+                    winner = 'playerOne'
+                    roundContinue = false
+                }
+                else if (playerOneCardNumbers < playerTwoCardNumbers) {
+                    winner = 'playerTwo'
+                    roundContinue = false
+                }
+            }
+    
+            if (winner !== '') {
+                roundContinue = false
+            }
         }
+        
 
         // ------------------------------------------------------------------
-
         // Determining four of a kind
-        const playerOneFourCards = {}
-        let playerOneFourOfAKind; 
-        var playerOneFourOfKindCard = 0
-
-        // goes through player ones cards and sorts it into what card numbers they have, and how many they have, into an object
-        // object will look like this {'1': 4, '5', 1} as an example, with the string being the card number, and the int
-        // being the number of times that card is in the hand
-        playerOneCardNumbers.forEach(function(duplicates) {
-            playerOneFourCards[duplicates] = (playerOneFourCards[duplicates] || 0) + 1
-        })
-
-        // this sorts the above object into an array, with each item being in its on array within the array
-        const playerOneSortedDuplicateCards = Object.entries(playerOneFourCards)
-
-        // this determines whether the player has any card that appears four times
-        if (playerOneSortedDuplicateCards.length === 2) {
-            playerOneFourOfAKind = true
-            for (let i = 0; i < playerOneSortedDuplicateCards.length; i++) {
-                if (playerOneSortedDuplicateCards[i][1] === 4) {
-                    playerOneFourOfKindCard = parseInt(playerOneSortedDuplicateCards[i][0])
+        let playerOneSortedDuplicateCards;
+        let playerTwoSortedDuplicateCards;
+        if (roundContinue) {
+            const playerOneCards = {}
+            let playerOneFourOfAKind; 
+            var playerOneFourOfKindCard = 0
+    
+            // goes through player ones cards and sorts it into what card numbers they have, and how many they have, into an object
+            // object will look like this {'1': 4, '5', 1} as an example, with the string being the card number, and the int
+            // being the number of times that card is in the hand
+            playerOneCardNumbers.forEach(function(duplicates) {
+                playerOneCards[duplicates] = (playerOneCards[duplicates] || 0) + 1
+            })
+    
+            // this sorts the above object into an array, with each item being in its on array within the array
+            playerOneSortedDuplicateCards = Object.entries(playerOneCards)
+    
+            // this determines whether the player has any card that appears four times
+            if (playerOneSortedDuplicateCards.length === 2) {
+                for (let i = 0; i < playerOneSortedDuplicateCards.length; i++) {
+                    if (playerOneSortedDuplicateCards[i][1] === 4) {
+                        playerOneFourOfAKind = true
+                        playerOneFourOfKindCard = parseInt(playerOneSortedDuplicateCards[i][0])
+                    }
                 }
             }
-        }
-
-        // above code repeats for player two
-        const playerTwoFourCards = {}
-        let playerTwoFourOfAKind; 
-        var playerTwoFourOfKindCard = 0
-
-        playerTwoCardNumbers.forEach(function(duplicates) {
-            playerTwoFourCards[duplicates] = (playerTwoFourCards[duplicates] || 0) + 1
-        })
-
-        const playerTwoSortedDuplicateCards = Object.entries(playerTwoFourCards)
-
-        if (playerTwoSortedDuplicateCards.length === 2) {
-            playerTwoFourOfAKind = true
-            for (let i = 0; i < playerTwoSortedDuplicateCards.length; i++) {
-                if (playerTwoSortedDuplicateCards[i][1] === 4) {
-                    playerTwoFourOfKindCard = parseInt(playerTwoSortedDuplicateCards[i][0])
+    
+            // above code repeats for player two
+            const playerTwoCards = {}
+            let playerTwoFourOfAKind; 
+            var playerTwoFourOfKindCard = 0
+    
+            playerTwoCardNumbers.forEach(function(duplicates) {
+                playerTwoCards[duplicates] = (playerTwoCards[duplicates] || 0) + 1
+            })
+    
+            playerTwoSortedDuplicateCards = Object.entries(playerTwoCards)
+    
+            if (playerTwoSortedDuplicateCards.length === 2) {
+                for (let i = 0; i < playerTwoSortedDuplicateCards.length; i++) {
+                    if (playerTwoSortedDuplicateCards[i][1] === 4) {
+                        playerTwoFourOfAKind = true
+                        playerTwoFourOfKindCard = parseInt(playerTwoSortedDuplicateCards[i][0])
+                    }
                 }
             }
-        }
-
-        // determines who wins based on who has a four of a kind
-        // if both players have one, the highest four of a kind wins
-        // if no four of a kind, the round will continue
-        if (playerOneFourOfAKind && !playerTwoFourOfAKind) {
-            winner = 'playerOne'
-            roundContinue = false
-
-        }
-
-        else if (!playerOneFourOfAKind && playerTwoFourOfAKind) {
-            winner = 'playerTwo'
-            roundContinue = false
-
-        }
-
-        else if (playerOneFourOfAKind && playerTwoFourOfAKind) {
-            if (playerOneFourOfKindCard > playerTwoFourOfKindCard) {
+    
+            // determines who wins based on who has a four of a kind
+            // if both players have one, the highest four of a kind wins
+            // if no four of a kind, the round will continue
+            if (playerOneFourOfAKind && !playerTwoFourOfAKind) {
                 winner = 'playerOne'
                 roundContinue = false
-
+    
             }
-            else if (playerOneFourOfKindCard < playerTwoFourOfKindCard) {
+    
+            else if (!playerOneFourOfAKind && playerTwoFourOfAKind) {
                 winner = 'playerTwo'
                 roundContinue = false
-
+    
             }
+    
+            else if (playerOneFourOfAKind && playerTwoFourOfAKind) {
+                if (playerOneFourOfKindCard > playerTwoFourOfKindCard) {
+                    winner = 'playerOne'
+                    roundContinue = false
+    
+                }
+                else if (playerOneFourOfKindCard < playerTwoFourOfKindCard) {
+                    winner = 'playerTwo'
+                    roundContinue = false
+    
+                }
+            }
+            
         }
 
         // -----------------------------------------------------------
+        // determining full house
+        if (roundContinue){
+            let playerOneFullHouse; 
+            var playerOneFullHouseHighCard = 0 
+            var playerOneFullHouseCardTwo = 0
+    
+    
+            // this determines whether the player has any card that appears four times
+            if (playerOneSortedDuplicateCards.length === 2) {
+                for (let i = 0; i < playerOneSortedDuplicateCards.length; i++) {
+                    if (playerOneSortedDuplicateCards[i][1] === 3) {
+                        playerOneFullHouse = true
+                        playerOneFullHouseHighCard = parseInt(playerOneSortedDuplicateCards[i][0])
+                    }
+                    else if (playerOneSortedDuplicateCards[i][1] === 2) {
+                        playerOneFullHouseCardTwo = parseInt(playerOneSortedDuplicateCards[i][0])
+                    }
+                }
+            }
+            
+            let playerTwoFullHouse; 
+            var playerTwoFullHouseHighCard = 0 
+            var playerTwoFullHouseCardTwo = 0
+    
+    
+            // this determines whether the player has any card that appears four times
+            if (playerTwoSortedDuplicateCards.length === 2) {
+                for (let i = 0; i < playerTwoSortedDuplicateCards.length; i++) {
+                    if (playerTwoSortedDuplicateCards[i][1] === 3) {
+                        playerTwoFullHouse = true
+                        playerTwoFullHouseHighCard = parseInt(playerTwoSortedDuplicateCards[i][0])
+                    }
+                    else if (playerTwoSortedDuplicateCards[i][1] === 2) {
+                        playerTwoFullHouseCardTwo = parseInt(playerTwoSortedDuplicateCards[i][0])
+                    }
+                }
+            }
+    
+            if (playerOneFullHouse && !playerTwoFullHouse) {
+                winner = 'playerOne'
+                roundContinue = false
+    
+            }
+    
+            else if (!playerOneFullHouse && playerTwoFullHouse) {
+                winner = 'playerTwo'
+                roundContinue = false
+    
+            }
+    
+            else if (playerOneFullHouse && playerTwoFullHouse) {
+                if (playerOneFullHouseHighCard > playerTwoFullHouseHighCard) {
+                    winner = 'playerOne'
+                    roundContinue = false
+    
+                }
+                else if (playerOneFullHouseHighCard < playerTwoFullHouseHighCard) {
+                    winner = 'playerTwo'
+                    roundContinue = false
+    
+                }
+            }
+            
+        }
         
         
-
-
-
-
+        
+        
+    }
+        console.log(winner)
+        roundContinue = false
 
 
     }
+
+
+
     
-
-
     
-    
-    
-// // -----------------------------------------------------------------
-//     // Determining who wins if relying on high cards
-
-//     // declaring the winner and winning cardValue variables
-
-//     let winner;
-//     let cardValue;
-
-//     // looping through playerOneCardNumbers (already sorted from highest to lowest) and comparing with playerTwoCardNumbers
-//     // if at any point the number of one player is higher than the other, they are declared the winner of the highest card
-//     for (let i = 0; i < playerOneCardNumbers.length; i++) {
-//         if (playerOneCardNumbers[i] > playerTwoCardNumbers[i]) {
-//             winner = 'playerOne'
-//             cardValue = playerOneCardNumbers[i]
-//             break
-//         }
-//         else if (playerOneCardNumbers[i] < playerTwoCardNumbers[i]) {
-//             winner = 'playerTwo'
-//             cardValue = playerTwoCardNumbers[i]
-//             break
-//         }
-//     }
-
-//     console.log('high card winner is', winner, 'with a high card of', cardValue)
-    
-// // -----------------------------------------------------------------
-
-// // -----------------------------------------------------------------
-// // Determing pairs
-//     // creating an empty array to fill with pairs
-//     playerOnePairs = []
-
-//     // looping through playerOneCardNumbers (already sorted in order of highest to lowest). If the current card...
-//     // is equal to the next card that card number is added to the above array to be declared as a pair
-//     for (let i = 0; i < playerOneCardNumbers.length; i++) {
-//         if (playerOneCardNumbers[i] === playerOneCardNumbers[i + 1]) {
-//             playerOnePairs.push(playerOneCardNumbers[i])
-//         }
-//     }
-
-//     // above is repeated for player 2
-//     playerTwoPairs = []
-//     for (let i = 0; i < playerTwoCardNumbers.length; i++) {
-//         if (playerTwoCardNumbers[i] === playerTwoCardNumbers[i + 1]) {
-//             playerTwoPairs.push(playerTwoCardNumbers[i])
-//         }
-//     }
-
-//     let pairWinner;
-//     let pairValue;
-
-//     // functions similarly to the highest card winner section, but adds an if statement so that a winner is declared...
-//     // // even if a player has no pairs (which would result in undefined being returned otherwise)
-//     if (playerOnePairs.length && playerTwoPairs.length) {
-//         for (let i = 0; i < playerOnePairs.length; i++) {
-        
-//             if (playerOnePairs[i] > playerTwoPairs[i]) {
-//                 pairWinner = 'playerOne'
-//                 pairValue = playerOnePairs[i]
-//                 break
-//             }
-//             else if (playerOnePairs[i] < playerTwoPairs[i]) {
-//                 pairWinner = 'playerTwo'
-//                 pairValue = playerTwoPairs[i]
-//                 break
-//             }
-//             else if (playerOnePairs[i] === undefined && playerTwoPairs[i] !== undefined) {
-//                 pairWinner = 'playerTwo'
-//                 pairValue = playerTwoPairs[i]
-//             }
-//             else if (playerOnePairs[i] !== undefined && playerTwoPairs[i] === undefined) {
-//                 pairWinner = 'playerTwo'
-//                 pairValue = playerTwoPairs[i]
-//             }
-                
-//         }
-//     }
-
-//     else if (playerOnePairs.length && !playerTwoPairs.length) {
-//         pairWinner = 'playerOne'
-//         pairValue = playerOnePairs[0]
-//     }
-
-//     else if (!playerOnePairs.length && playerTwoPairs.length) {
-//         pairWinner = 'playerTwo'
-//         pairValue = playerTwoPairs[0]
-//     }
-
-//     else {
-//         console.log('no pairs')
-//     }
-   
-//     console.log('one pair winner is', pairWinner, 'with a pair of', pairValue + "'s")
-
-// // -----------------------------------------------------------------
-
-//     // determining two pairs winner
-
-//     let twoPairWinner;
-//     let twoPairValue; 
-
-//     if (playerOnePairs.length >= 2 && playerTwoPairs.length >= 2) {
-//         for (let i = 0; i < playerOnePairs.length; i++) {
-        
-//             if (playerOnePairs[i] > playerTwoPairs[i]) {
-//                 pairWinner = 'playerOne'
-//                 pairValue = playerOnePairs[i]
-//                 break
-//             }
-//             else if (playerOnePairs[i] < playerTwoPairs[i]) {
-//                 pairWinner = 'playerTwo'
-//                 pairValue = playerTwoPairs[i]
-//                 break
-//             }
-//         }
-//     }
-
- }
-
 
